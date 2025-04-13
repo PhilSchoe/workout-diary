@@ -1,46 +1,87 @@
-import { useCallback, useEffect, useState } from '@lynx-js/react';
+import { useCallback, useEffect, useState } from "@lynx-js/react";
 
-import './App.css';
-import arrow from './assets/arrow.png';
-import lynxLogo from './assets/lynx-logo.png';
-import reactLynxLogo from './assets/react-logo.png';
+import "./App.css";
+import arrow from "./assets/arrow.png";
+import lynxLogo from "./assets/lynx-logo.png";
+import reactLynxLogo from "./assets/react-logo.png";
 
 export function App() {
+  const workout = { exercise: "", weight: "", sets: "", reps: "" };
+
   const [alterLogo, setAlterLogo] = useState(false);
+  const [workouts, setWorkouts] = useState([workout]);
 
   useEffect(() => {
-    console.info('Hello, ReactLynx');
+    console.info("Hello, ReactLynx");
   }, []);
 
   const onTap = useCallback(() => {
-    'background only';
+    "background only";
     setAlterLogo(!alterLogo);
   }, [alterLogo]);
 
+  const addRow = () => {
+    setWorkouts([
+      ...workouts,
+      { exercise: "", weight: "", sets: "", reps: "" },
+    ]);
+  };
+
+  const updateRow = (index: number, field: string, value: string) => {
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts[index][field as keyof typeof workout] = value;
+    setWorkouts(updatedWorkouts);
+  };
+
   return (
     <view>
-      <view className="Background" />
       <view className="App">
-        <view className="Banner">
-          <view className="Logo" bindtap={onTap}>
-            {alterLogo ? (
-              <image src={reactLynxLogo} className="Logo--react" />
-            ) : (
-              <image src={lynxLogo} className="Logo--lynx" />
-            )}
-          </view>
-          <text className="Title">React</text>
-          <text className="Subtitle">on Lynx</text>
-        </view>
         <view className="Content">
-          <image src={arrow} className="Arrow" />
-          <text className="Description">Tap the logo and have fun!</text>
-          <text className="Hint">
-            Edit<text style={{ fontStyle: 'italic' }}>{' src/App.tsx '}</text>
-            to see updates!
-          </text>
+          <text className="Title">Workout Logger</text>
+          <scroll-view>
+            <view>
+              <view className="TableHeader">
+                <text>Exercise</text>
+                <text>Weight (kg)</text>
+                <text>Sets</text>
+                <text>Reps</text>
+              </view>
+              {workouts.map((workout, index) => (
+                <view key={index} className="TableRow">
+                  <input
+                    value={workout.exercise}
+                    placeholder="Exercise"
+                    onInput={(e) =>
+                      updateRow(index, "exercise", e.currentTarget.value)
+                    }
+                  />
+                  <input
+                    value={workout.weight}
+                    placeholder="Weight"
+                    onInput={(e) =>
+                      updateRow(index, "weight", e.currentTarget.value)
+                    }
+                  />
+                  <input
+                    value={workout.sets}
+                    placeholder="Sets"
+                    onInput={(e) =>
+                      updateRow(index, "sets", e.currentTarget.value)
+                    }
+                  />
+                  <input
+                    value={workout.reps}
+                    placeholder="Reps"
+                    onInput={(e) =>
+                      updateRow(index, "reps", e.currentTarget.value)
+                    }
+                  />
+                </view>
+              ))}
+            </view>
+          </scroll-view>
+          <view bindtap={addRow}>Add Exercise</view>
         </view>
-        <view style={{ flex: 1 }}></view>
       </view>
     </view>
   );
